@@ -5,7 +5,7 @@
   "author": "kodarkdev",
   "license": "MIT",
   "scripts": {
-    "dev": "npx nodemon src/server.ts --watch 'src/' -e ts",
+    "dev": "nodemon",
     "compile": "npx tsc",
     "start": "node ./dist/server.js"
   },
