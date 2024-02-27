@@ -6,32 +6,51 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
   const { username, email, password } = req.body;
 
   try {
+
     const user = new User({ username, email, password });
+
     await user.save();
+
     res.json({ message: 'Registration successful' });
-  } catch (error) {
+  } catch (error: any) {
+
+    if (error?.code === 11000) {
+      const duplicateKey = Object.keys(error?.keyPattern)[0];
+
+      return res.status(409).json({ message: `There is already a user with this ${duplicateKey}`, field: duplicateKey });
+    }
+
     next(error);
   }
 };
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
-  const { username, password } = req.body;
+  const { login, password } = req.body;
 
   try {
-    const user: any = await User.findOne({ username });
+
+    const user: any = await User.findOne({
+      $or: [
+        { username: login },
+        { email: login }
+      ]
+    });
+
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(401).json({ message: 'Account not found' });
     }
+
     const passwordMatch = await user.comparePassword(password);
 
     if (!passwordMatch) {
-      return res.status(401).json({ message: 'Incorrect password' });
+      return res.status(401).json({ message: 'Account not found' });
     }
 
     const token = jwt.sign({ userId: user._id }, `${process.env.SECRET_KEY}`, {
       expiresIn: '1 hour'
     });
-    res.json({ token });
+
+    res.json({ user, token });
   } catch (error) {
     next(error);
   }
