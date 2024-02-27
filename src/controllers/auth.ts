@@ -6,7 +6,7 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
   const { username, email, password } = req.body;
 
   try {
-
+   
     const user = new User({ username, email, password });
 
     await user.save();
@@ -19,7 +19,7 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
 
       return res.status(409).json({ message: `There is already a user with this ${duplicateKey}`, field: duplicateKey });
     }
-
+    
     next(error);
   }
 };
@@ -51,6 +51,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     });
 
     res.json({ user, token });
+    
   } catch (error) {
     next(error);
   }
