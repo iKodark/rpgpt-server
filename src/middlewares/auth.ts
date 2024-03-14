@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
 import jwt from "jsonwebtoken";
-import User from "../models/User";
+import { User } from "@/models";
 
 const authenticate = async (req: Request | any, res: Response, next: NextFunction) => {
   const token = req.headers.authorization?.split(' ')[1];
@@ -12,6 +12,7 @@ const authenticate = async (req: Request | any, res: Response, next: NextFunctio
 
   try {
     const decodedToken: any = jwt.verify(token, `${process.env.SECRET_KEY}`);
+
     const user = await User.findById(decodedToken.userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
