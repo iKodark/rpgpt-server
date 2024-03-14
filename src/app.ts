@@ -5,8 +5,7 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import connectDB from "./db";
 
-import authRoutes from './routes/auth';
-import userRoutes from './routes/user';
+import * as routes from "@/routes";
 
 const app = express();
 
@@ -24,8 +23,8 @@ app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).send(error.message);
 })
 
-app.use('/auth', authRoutes);
+app.use('/auth', routes.auth);
 
-app.use('/user', userRoutes);
+app.use('/user', routes.user);
 
 export default app;
